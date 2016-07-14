@@ -15,6 +15,7 @@
 		584B7D7D1D37CDB400B339BF /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584B7D7C1D37CDB400B339BF /* LoginViewController.swift */; };
 		584B7D7F1D37CE0F00B339BF /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 584B7D7E1D37CE0F00B339BF /* MapKit.framework */; };
 		584B7D811D37D00A00B339BF /* MapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584B7D801D37D00A00B339BF /* MapModel.swift */; };
+		584B7D841D3818EA00B339BF /* TheMapTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584B7D831D3818EA00B339BF /* TheMapTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		584B7D7C1D37CDB400B339BF /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = ../LoginViewController.swift; sourceTree = "<group>"; };
 		584B7D7E1D37CE0F00B339BF /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		584B7D801D37D00A00B339BF /* MapModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapModel.swift; sourceTree = "<group>"; };
+		584B7D831D3818EA00B339BF /* TheMapTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TheMapTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +67,7 @@
 				584B7D7A1D37CC9D00B339BF /* StudentBio.swift */,
 				584B7D801D37D00A00B339BF /* MapModel.swift */,
 				584B7D7C1D37CDB400B339BF /* LoginViewController.swift */,
+				584B7D831D3818EA00B339BF /* TheMapTableViewController.swift */,
 				584B7D681D37CC3900B339BF /* AppDelegate.swift */,
 				584B7D6C1D37CC3900B339BF /* Main.storyboard */,
 				584B7D6F1D37CC3900B339BF /* Assets.xcassets */,
@@ -148,6 +151,7 @@
 				584B7D811D37D00A00B339BF /* MapModel.swift in Sources */,
 				584B7D7D1D37CDB400B339BF /* LoginViewController.swift in Sources */,
 				584B7D7B1D37CC9D00B339BF /* StudentBio.swift in Sources */,
+				584B7D841D3818EA00B339BF /* TheMapTableViewController.swift in Sources */,
 				584B7D691D37CC3900B339BF /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
