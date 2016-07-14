@@ -9,27 +9,47 @@
 import UIKit
 
 class LoginViewController: UIViewController {
+    
+    
+    //MARK: Outlets 
+    @IBOutlet weak var emailTxtField: UITextView!
+    @IBOutlet weak var passwrdTxtField: UITextView!
+    
+    
+    //MARK: Action
+    @IBAction func loginBtnPressed(sender: AnyObject) {
+        // email and password are not empty.
+        guard (!emailTxtField.text.isEmpty && !passwrdTxtField.text.isEmpty) else {
+            let alert = UIAlertController(title: "Error", message: "Email and/or password field is empty.", preferredStyle: .Alert)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+            return
+        }
+        
+        MapModel.shareInstance().login(emailTxtField.text!, password: passwrdTxtField.text!) { (success, errorString) -> Void in
+            guard success else {
+                dispatch_async(dispatch_get_main_queue(), {
+                    let alert = UIAlertController(title: "error", message: errorString, preferredStyle: .Alert)
+                    alert.addAction(UIAlertAction(title: "click", style: .Default, handler: nil))
+                    self.presentViewController(alert, animated: true, completion: nil)
+        
+        })
+        return
+        
+            }
+            dispatch_async(dispatch_get_main_queue(), {
+                let tabBC = self.storyboard!.instantiateViewControllerWithIdentifier("TabBC") as! UITabBarController
+                self.presentViewController(tabBC, animated: true, completion: nil)
+            })
+            
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

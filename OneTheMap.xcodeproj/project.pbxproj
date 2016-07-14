@@ -13,6 +13,8 @@
 		584B7D731D37CC3900B339BF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 584B7D711D37CC3900B339BF /* LaunchScreen.storyboard */; };
 		584B7D7B1D37CC9D00B339BF /* StudentBio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584B7D7A1D37CC9D00B339BF /* StudentBio.swift */; };
 		584B7D7D1D37CDB400B339BF /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584B7D7C1D37CDB400B339BF /* LoginViewController.swift */; };
+		584B7D7F1D37CE0F00B339BF /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 584B7D7E1D37CE0F00B339BF /* MapKit.framework */; };
+		584B7D811D37D00A00B339BF /* MapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584B7D801D37D00A00B339BF /* MapModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,7 +25,9 @@
 		584B7D721D37CC3900B339BF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		584B7D741D37CC3900B339BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		584B7D7A1D37CC9D00B339BF /* StudentBio.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StudentBio.swift; path = ../StudentBio.swift; sourceTree = "<group>"; };
-		584B7D7C1D37CDB400B339BF /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		584B7D7C1D37CDB400B339BF /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoginViewController.swift; path = ../LoginViewController.swift; sourceTree = "<group>"; };
+		584B7D7E1D37CE0F00B339BF /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		584B7D801D37D00A00B339BF /* MapModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				584B7D7F1D37CE0F00B339BF /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,7 +45,7 @@
 		584B7D5C1D37CC3900B339BF = {
 			isa = PBXGroup;
 			children = (
-				584B7D7C1D37CDB400B339BF /* LoginViewController.swift */,
+				584B7D7E1D37CE0F00B339BF /* MapKit.framework */,
 				584B7D671D37CC3900B339BF /* OneTheMap */,
 				584B7D661D37CC3900B339BF /* Products */,
 			);
@@ -58,6 +63,8 @@
 			isa = PBXGroup;
 			children = (
 				584B7D7A1D37CC9D00B339BF /* StudentBio.swift */,
+				584B7D801D37D00A00B339BF /* MapModel.swift */,
+				584B7D7C1D37CDB400B339BF /* LoginViewController.swift */,
 				584B7D681D37CC3900B339BF /* AppDelegate.swift */,
 				584B7D6C1D37CC3900B339BF /* Main.storyboard */,
 				584B7D6F1D37CC3900B339BF /* Assets.xcassets */,
@@ -138,6 +145,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				584B7D811D37D00A00B339BF /* MapModel.swift in Sources */,
 				584B7D7D1D37CDB400B339BF /* LoginViewController.swift in Sources */,
 				584B7D7B1D37CC9D00B339BF /* StudentBio.swift in Sources */,
 				584B7D691D37CC3900B339BF /* AppDelegate.swift in Sources */,
