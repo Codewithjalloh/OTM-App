@@ -12,16 +12,34 @@ import Foundation
 
 class TheMapTableViewController: UITableViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-    }
-    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
     
+    
+    
+    // MARK: - Table view data source
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return MapModel.shareInstance().studentInfos.count
+        
+    }
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("pinMapCell")!
+        let studentInfo = MapModel.shareInstance().studentInfos[indexPath.row]
+        cell.textLabel?.text = studentInfo.fullName()
+        cell.detailTextLabel?.text = studentInfo.linkUrl
+        
+        return cell
+    }
+    
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let studentInfo = MapModel.shareInstance().studentInfos[indexPath.row]
+        UIApplication.sharedApplication().openURL(NSURL(string: studentInfo.linkUrl)!)
+    }
+
     
     @IBAction func logoutBtnPressed(sender: AnyObject) {
         MapModel.shareInstance().logOut()
@@ -44,27 +62,6 @@ class TheMapTableViewController: UITableViewController {
         }
     }
 
-    // MARK: - Table view data source
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-         return MapModel.shareInstance().studentBios.count
-        
-    }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("pinMapCell", forIndexPath: indexPath)
-        let studentInfo = MapModel.shareInstance().studentBios[indexPath.row]
-        cell.textLabel?.text = studentInfo.fullName()
-        cell.detailTextLabel?.text = studentInfo.linkUrl
-
-        return cell
-    }
-
-
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let studentInfo = MapModel.shareInstance().studentBios[indexPath.row]
-        UIApplication.sharedApplication().openURL(NSURL(string: studentInfo.linkUrl)!)
-    }
-    
-   
-
 }
+

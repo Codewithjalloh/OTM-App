@@ -16,57 +16,52 @@ class MapModel: NSObject {
     var userFirstName: String?
     var userLastName: String?
     
-    var sessionID: String?
+    var sessionId: String?
     var accountKey: String?
     
-    var studentBios: [StudentBio]
+    var studentInfos: [StudentInfo]
     
     
     override init() {
-        studentBios = [StudentBio]()
+        studentInfos = [StudentInfo]()
     }
     
     
     func login(email: String, password: String, completionHandler: (success: Bool, errorString: String?) -> Void) {
-        // create a request object 
+        
+        // Create a request object.
         let urlString = "https://www.udacity.com/api/session"
         let url = NSURL(string: urlString)!
         let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.HTTPBody = NSString(format: "{\"udacity\": {\"username\": \"%@\", \"password\":\"@\"}}", email, password).dataUsingEncoding(NSUTF8StringEncoding)
-        
-        // submit the request with a session.
+        request.HTTPBody = NSString(format: "{\"udacity\": {\"username\": \"%@\", \"password\":\"%@\"}}", email, password).dataUsingEncoding(NSUTF8StringEncoding)
+        // Submit the request with a session.
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { data, response, error in
-        
-            // error cheching of response.
+            // Error checking of response.
             guard error == nil else {
                 completionHandler(success: false, errorString: error?.localizedDescription)
                 return
             }
-            
             guard let data = data else {
                 completionHandler(success: false, errorString: "No data was returned by the request!")
                 return
             }
-            
+            // Handling special format of response data (skipping the first 5 characters).
             let newData = data.subdataWithRange(NSMakeRange(5, data.length-5))
-            
-            // parse the return data.
+            // Parse the returned data.
             let parsedResult = try! NSJSONSerialization.JSONObjectWithData(newData, options: .AllowFragments)
-            
-            // 
+            // Present any error to user, mostly because of the bad credentials.
             guard parsedResult.objectForKey("error") == nil else {
                 completionHandler(success: false, errorString: (parsedResult.objectForKey("error")! as! String))
                 return
             }
-            
-            let accountKey = ((parsedResult["account"] as! [String: AnyObject]) ["key"] as! String)
-            self.sessionID = ((parsedResult["session"] as! [String: AnyObject])["id"] as! String)
+            // Now we successfully logged in, record the account key and session id, and then redirect to map view.
+            let accountKey = ((parsedResult["account"] as! [String: AnyObject])["key"] as! String)
+            self.sessionId = ((parsedResult["session"] as! [String: AnyObject])["id"] as! String)
             self.getUserData(accountKey, completionHandler: { (success, errorString) -> Void in
-            
                 if (success) {
                     self.loadStudentInfos({ (success, errorString) -> Void in
                         completionHandler(success: success, errorString: errorString)
@@ -75,46 +70,56 @@ class MapModel: NSObject {
                     completionHandler(success: false, errorString: errorString)
                 }
             })
-        
         }
         task.resume()
+        
     }
     
-    func newStudentDetailsAndSubmit(mapString: String, mediaURL: String, placemark: MKPlacemark, completionHandler: (success: Bool, errorString: String?) -> Void ){
+    func getUserData(accountKey: String, completionHandler: (success: Bool, errorString: String?) -> Void) {
         
-        let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation")!)
-        request.HTTPMethod = "POST"
-        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr MINE", forHTTPHeaderField: "X-Parse-Application-Id")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.HTTPBody = NSString(format: "{\"uniqueKey\": \"%@\", \"firstName\": \"%@\", \"lastName\": \"%@\",\"mapString\": \"%@\", \"mediaURL\": \"%@\",\"latitude\": %f, \"longitude\": %f}", accountKey!, userFirstName!, userLastName!, mapString, mediaURL, placemark.coordinate.latitude, placemark.coordinate.longitude).dataUsingEncoding(NSUTF8StringEncoding)
+        let request = NSMutableURLRequest(URL: NSURL(string: NSString(format: "https://www.udacity.com/api/users/%@", accountKey) as String)!)
         
         let session = NSURLSession.sharedSession()
-        let task = session.dataTaskWithRequest(request) {data, response, error in
-        
-            guard error == nil else {
-                completionHandler(success: false, errorString: error?.description)
+        let task = session.dataTaskWithRequest(request) {data, response, error in guard error == nil else {
+            completionHandler(success: false, errorString: error?.localizedDescription)
+            return
+            
+            }
+            guard let data = data else {
+                completionHandler(success: false, errorString: "No data was returned by the request!")
                 return
             }
-            let studentInfo = StudentBio(dict: ["firstName": self.userFirstName!, "lastName": self.userLastName!, "linkUrl": mediaURL, "latitude": placemark.coordinate.latitude, "longitude": placemark.coordinate.longitude])
-            self.studentBios.insert(studentInfo, atIndex: 0)
+            let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
+            let parsedResult = try! NSJSONSerialization.JSONObjectWithData(newData, options: .AllowFragments)
+            
+            self.userFirstName = ((parsedResult["user"] as! [String: AnyObject]) ["first_name"] as! String)
+            self.userLastName = ((parsedResult["user"] as! [String: AnyObject]) ["last_name"] as! String)
+            self.accountKey = accountKey
             completionHandler(success: true, errorString: nil)
         }
         task.resume()
+        
     }
     
+    func logOut() {
+        accountKey = nil
+        userFirstName = nil
+        userLastName = nil
+        sessionId = nil
+    }
     
     func loadStudentInfos(completionHandler: (success: Bool, errorString: String?) -> Void) {
         // retrive student loc data
         let parameters = ["order": "-updatedAt"]
         let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation" + MapModel.escapeParameters(parameters))!)
-        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr MINE", forHTTPHeaderField: "X-Parse-Application-Id")
-        request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY MINE", forHTTPHeaderField: "X-Parse-REST-API-Key")
+        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
         
         
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { data, response, error in guard error == nil else {
-                completionHandler(success: false, errorString: error?.description)
-                return
+            completionHandler(success: false, errorString: error?.description)
+            return
             }
             
             guard let data = data else {
@@ -135,7 +140,7 @@ class MapModel: NSObject {
                 return
             }
             
-            self.studentBios.removeAll()
+            self.studentInfos.removeAll()
             for dict in resultsArray! {
                 let latitude = CLLocationDegrees(dict.objectForKey("latitude")! as! Double)
                 let longitude = CLLocationDegrees(dict.objectForKey("longitude")! as! Double)
@@ -144,40 +149,42 @@ class MapModel: NSObject {
                 let lastName = dict.objectForKey("lastName") as! String
                 let linkUrl = dict.objectForKey("mediaURL") as! String
                 
-                self.studentBios.append(StudentBio(dict: ["firstName": firstName, "lastName": lastName, "linkUrl": linkUrl, "latitude": latitude, "longitude": longitude]))
+                self.studentInfos.append(StudentInfo(dict: ["firstName": firstName, "lastName": lastName, "linkUrl": linkUrl, "latitude": latitude, "longitude": longitude]))
             }
             completionHandler(success: true, errorString: nil)
         }
         task.resume()
     }
+
     
-    
-    
-    func getUserData(accountKey: String, completionHandler: (success: Bool, errorString: String?) -> Void) {
+    func newStudentDetailsAndSubmit(mapString: String, mediaURL: String, placemark: MKPlacemark, completionHandler: (success: Bool, errorString: String?) -> Void ){
         
-        let request = NSMutableURLRequest(URL: NSURL(string: NSString(format: "https://www.udacity.com/api/users/%@", accountKey) as String)!)
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation")!)
+        request.HTTPMethod = "POST"
+        request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.HTTPBody = NSString(format: "{\"uniqueKey\": \"%@\", \"firstName\": \"%@\", \"lastName\": \"%@\",\"mapString\": \"%@\", \"mediaURL\": \"%@\",\"latitude\": %f, \"longitude\": %f}", accountKey!, userFirstName!, userLastName!, mapString, mediaURL, placemark.coordinate.latitude, placemark.coordinate.longitude).dataUsingEncoding(NSUTF8StringEncoding)
         
         let session = NSURLSession.sharedSession()
-        let task = session.dataTaskWithRequest(request) {data, response, error in guard error == nil else {
-            completionHandler(success: false, errorString: error?.localizedDescription)
-            return
-            
-            }
-            guard let data = data else {
-                completionHandler(success: false, errorString: "No data was returned by the request!")
+        let task = session.dataTaskWithRequest(request) {data, response, error in
+        
+            guard error == nil else {
+                completionHandler(success: false, errorString: error?.description)
                 return
             }
-            let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
-            let parsedResult = try! NSJSONSerialization.JSONObjectWithData(newData, options: .AllowFragments)
-            
-            self.userFirstName = ((parsedResult["user"] as! [String: AnyObject]) ["first_name"] as! String)
-            self.userLastName = ((parsedResult["user"] as! [String: AnyObject]) ["lasr_name"] as! String)
-            self.accountKey = accountKey
+            let studentInfo = StudentInfo(dict: ["firstName": self.userFirstName!, "lastName": self.userLastName!, "linkUrl": mediaURL, "latitude": placemark.coordinate.latitude, "longitude": placemark.coordinate.longitude])
+            self.studentInfos.insert(studentInfo, atIndex: 0)
             completionHandler(success: true, errorString: nil)
         }
         task.resume()
-        
     }
+    
+    
+    
+    
+    
+    
     
     class func shareInstance() -> MapModel {
         struct Singleton {
@@ -200,11 +207,6 @@ class MapModel: NSObject {
         return (!urlVars.isEmpty ? "?" : "") + urlVars.joinWithSeparator("&")
     }
     
-    func logOut() {
-        accountKey = nil
-        userFirstName = nil
-        userLastName = nil
-        sessionID = nil
-    }
+  
     
 }
