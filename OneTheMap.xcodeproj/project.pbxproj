@@ -18,6 +18,7 @@
 		584B7D841D3818EA00B339BF /* TheMapTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584B7D831D3818EA00B339BF /* TheMapTableViewController.swift */; };
 		58E82E4E1D3D7C7500F70CBE /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58E82E4D1D3D7C7500F70CBE /* MapViewController.swift */; };
 		58E82E531D3D858E00F70CBE /* AddNewPinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58E82E521D3D858E00F70CBE /* AddNewPinViewController.swift */; };
+		78BD86F31D5BDC4600F2B443 /* StudentInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BD86F21D5BDC4600F2B443 /* StudentInformation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		584B7D831D3818EA00B339BF /* TheMapTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TheMapTableViewController.swift; sourceTree = "<group>"; };
 		58E82E4D1D3D7C7500F70CBE /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		58E82E521D3D858E00F70CBE /* AddNewPinViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddNewPinViewController.swift; sourceTree = "<group>"; };
+		78BD86F21D5BDC4600F2B443 /* StudentInformation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentInformation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,11 +70,8 @@
 		584B7D671D37CC3900B339BF /* OneTheMap */ = {
 			isa = PBXGroup;
 			children = (
-				58E82E511D3D7C9000F70CBE /* Controller */,
-				58E82E501D3D7C8A00F70CBE /* View */,
-				58E82E4F1D3D7C8100F70CBE /* Model */,
-				584B7D7A1D37CC9D00B339BF /* StudentInfo.swift */,
 				584B7D681D37CC3900B339BF /* AppDelegate.swift */,
+				584B7D7A1D37CC9D00B339BF /* StudentInfo.swift */,
 				584B7D801D37D00A00B339BF /* MapModel.swift */,
 				584B7D7C1D37CDB400B339BF /* LoginViewController.swift */,
 				584B7D831D3818EA00B339BF /* TheMapTableViewController.swift */,
@@ -82,29 +81,9 @@
 				584B7D6F1D37CC3900B339BF /* Assets.xcassets */,
 				584B7D711D37CC3900B339BF /* LaunchScreen.storyboard */,
 				584B7D741D37CC3900B339BF /* Info.plist */,
+				78BD86F21D5BDC4600F2B443 /* StudentInformation.swift */,
 			);
 			path = OneTheMap;
-			sourceTree = "<group>";
-		};
-		58E82E4F1D3D7C8100F70CBE /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Model;
-			sourceTree = "<group>";
-		};
-		58E82E501D3D7C8A00F70CBE /* View */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = View;
-			sourceTree = "<group>";
-		};
-		58E82E511D3D7C9000F70CBE /* Controller */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,7 +118,6 @@
 				TargetAttributes = {
 					584B7D641D37CC3900B339BF = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = W66XK9FLV2;
 					};
 				};
 			};
@@ -179,6 +157,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78BD86F31D5BDC4600F2B443 /* StudentInformation.swift in Sources */,
 				584B7D811D37D00A00B339BF /* MapModel.swift in Sources */,
 				58E82E531D3D858E00F70CBE /* AddNewPinViewController.swift in Sources */,
 				58E82E4E1D3D7C7500F70CBE /* MapViewController.swift in Sources */,
@@ -303,8 +282,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = OneTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.codewithjallohDev.OneTheMap;
+				PRODUCT_BUNDLE_IDENTIFIER = codewithjallohDev.OneTheMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -315,8 +295,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = OneTheMap/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.codewithjallohDev.OneTheMap;
+				PRODUCT_BUNDLE_IDENTIFIER = codewithjallohDev.OneTheMap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

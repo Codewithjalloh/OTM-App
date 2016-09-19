@@ -19,13 +19,6 @@ class MapModel: NSObject {
     var sessionId: String?
     var accountKey: String?
     
-    var studentInfos: [StudentInfo]
-    
-    
-    override init() {
-        studentInfos = [StudentInfo]()
-    }
-    
     
     func login(email: String, password: String, completionHandler: (success: Bool, errorString: String?) -> Void) {
         
@@ -49,16 +42,16 @@ class MapModel: NSObject {
                 completionHandler(success: false, errorString: "No data was returned by the request!")
                 return
             }
-            // Handling special format of response data (skipping the first 5 characters).
+            
             let newData = data.subdataWithRange(NSMakeRange(5, data.length-5))
             // Parse the returned data.
             let parsedResult = try! NSJSONSerialization.JSONObjectWithData(newData, options: .AllowFragments)
-            // Present any error to user, mostly because of the bad credentials.
+            // any error to user, because of the false credentials.
             guard parsedResult.objectForKey("error") == nil else {
                 completionHandler(success: false, errorString: (parsedResult.objectForKey("error")! as! String))
                 return
             }
-            // Now we successfully logged in, record the account key and session id, and then redirect to map view.
+            //successfully logged in
             let accountKey = ((parsedResult["account"] as! [String: AnyObject])["key"] as! String)
             self.sessionId = ((parsedResult["session"] as! [String: AnyObject])["id"] as! String)
             self.getUserData(accountKey, completionHandler: { (success, errorString) -> Void in
@@ -75,6 +68,7 @@ class MapModel: NSObject {
         
     }
     
+    // get user data function
     func getUserData(accountKey: String, completionHandler: (success: Bool, errorString: String?) -> Void) {
         
         let request = NSMutableURLRequest(URL: NSURL(string: NSString(format: "https://www.udacity.com/api/users/%@", accountKey) as String)!)
@@ -108,10 +102,11 @@ class MapModel: NSObject {
         sessionId = nil
     }
     
+    // load student info functions
     func loadStudentInfos(completionHandler: (success: Bool, errorString: String?) -> Void) {
         // retrive student loc data
         let parameters = ["order": "-updatedAt"]
-        let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation" + MapModel.escapeParameters(parameters))!)
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://parse.udacity.com/parse/classes/StudentLocation" + MapModel.escapeParameters(parameters))!)
         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
         
@@ -140,26 +135,43 @@ class MapModel: NSObject {
                 return
             }
             
-            self.studentInfos.removeAll()
+            StudentInformation.sharedInstance.studentInfos.removeAll()
             for dict in resultsArray! {
-                let latitude = CLLocationDegrees(dict.objectForKey("latitude")! as! Double)
-                let longitude = CLLocationDegrees(dict.objectForKey("longitude")! as! Double)
                 
-                let firstName = dict.objectForKey("firstName") as! String
-                let lastName = dict.objectForKey("lastName") as! String
-                let linkUrl = dict.objectForKey("mediaURL") as! String
                 
-                self.studentInfos.append(StudentInfo(dict: ["firstName": firstName, "lastName": lastName, "linkUrl": linkUrl, "latitude": latitude, "longitude": longitude]))
+                var latitude: AnyObject = 0.0
+                var longitude: AnyObject = 0.0
+                var firstName: AnyObject = ""
+                var lastName: AnyObject = ""
+                var linkUrl: AnyObject = ""
+                
+                if let aLatitude = dict.objectForKey("latitude") as? Double {
+                    latitude = CLLocationDegrees(aLatitude)
+                }
+                if let aLongitude = dict.objectForKey("longitude") as? Double {
+                    longitude = CLLocationDegrees(aLongitude)
+                }
+                if let fName = dict.objectForKey("firstName") as? String {
+                    firstName = fName
+                }
+                if let lName = dict.objectForKey("lastName") as? String {
+                    lastName = lName
+                }
+                if let url = dict.objectForKey("mediaURL") as? String {
+                    linkUrl = url
+                }
+                
+                StudentInformation.sharedInstance.studentInfos.append(StudentInfo(dict: ["firstName": firstName, "lastName": lastName, "linkUrl": linkUrl, "latitude": latitude, "longitude": longitude]))
             }
             completionHandler(success: true, errorString: nil)
         }
         task.resume()
     }
 
-    
+    // add new student info and submit function
     func newStudentDetailsAndSubmit(mapString: String, mediaURL: String, placemark: MKPlacemark, completionHandler: (success: Bool, errorString: String?) -> Void ){
         
-        let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation")!)
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://parse.udacity.com/parse/classes/StudentLocation")!)
         request.HTTPMethod = "POST"
         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
@@ -174,15 +186,11 @@ class MapModel: NSObject {
                 return
             }
             let studentInfo = StudentInfo(dict: ["firstName": self.userFirstName!, "lastName": self.userLastName!, "linkUrl": mediaURL, "latitude": placemark.coordinate.latitude, "longitude": placemark.coordinate.longitude])
-            self.studentInfos.insert(studentInfo, atIndex: 0)
+            StudentInformation.sharedInstance.studentInfos.insert(studentInfo, atIndex: 0)
             completionHandler(success: true, errorString: nil)
         }
         task.resume()
     }
-    
-    
-    
-    
     
     
     
@@ -199,8 +207,10 @@ class MapModel: NSObject {
         for (key, value) in parameters {
             let strValue = "\(value)"
             
+            // escape
             let escapeValue = strValue.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
             
+            // append
             urlVars += [key + "=" + "\(escapeValue!)"]
         }
         

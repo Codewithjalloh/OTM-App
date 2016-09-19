@@ -6,11 +6,12 @@
 //  Copyright © 2016 CWJ. All rights reserved.
 //
 
+
 import UIKit
 import MapKit
 import Foundation
 
-class AddNewPinViewController: UIViewController {
+class AddNewPinViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: Outle and Properties
     @IBOutlet weak var locationTxtField: UITextField!
@@ -26,14 +27,12 @@ class AddNewPinViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         submitBtn.enabled = false
+        
+        locationTxtField.delegate = self
+        linkTxtField.delegate = self 
+      
     }
-    
-    // MARK: ACTION FUNCTIONS
-    // cancel button pressed function
-    @IBAction func cancelBtnPressed(sender: AnyObject) {
-        dismissViewControllerAnimated(true, completion: nil)
-    }
-    
+
     // find button pressed function
     @IBAction func findBtnPressed(sender: AnyObject) {
         guard locationTxtField.text != "" else {
@@ -49,7 +48,11 @@ class AddNewPinViewController: UIViewController {
         
             guard error == nil else {
                 dispatch_async(dispatch_get_main_queue(), {
-                    let alert = UIAlertController(title: "error", message: error?.localizedDescription, preferredStyle: .Alert)
+                  
+                    self.activityIndicator.hidden = true
+                    self.activityIndicator.stopAnimating()
+                    
+                    let alert = UIAlertController(title: "error", message: "Connect to the Net", preferredStyle: .Alert)
                     alert.addAction(UIAlertAction(title: "dismiss", style: .Default, handler: nil))
                     self.presentViewController(alert, animated: true, completion: nil)
                 })
@@ -58,6 +61,10 @@ class AddNewPinViewController: UIViewController {
             
             guard placemarks!.count > 0 else {
                 dispatch_async(dispatch_get_main_queue(), {
+                    
+                    self.activityIndicator.hidden = true
+                    self.activityIndicator.stopAnimating()
+                    
                     let alert = UIAlertController(title: "error", message: "no match found.", preferredStyle: .Alert)
                     alert.addAction(UIAlertAction(title: "dismiss", style: .Default, handler: nil))
                     self.presentViewController(alert, animated: true, completion: nil)
@@ -77,26 +84,10 @@ class AddNewPinViewController: UIViewController {
     
     }
     
-    // preview button pressed function
-    @IBAction func prvBtnPressed(sender: AnyObject) {
-        guard linkTxtField.text != "" else {
-            let alert = UIAlertController(title: "error", message: "you must a link", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "dismiss", style: .Default, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
-            return
-        }
-        let app = UIApplication.sharedApplication()
-        let url = NSURL(string: linkTxtField.text!)!
-        if app.canOpenURL(url) {
-            app.openURL(url)
-        } else {
-            let alert = UIAlertController(title: "error", message: "cannot open link", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "dismiss", style: .Default, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
-        }
-        
-    }
+
     
+    
+    // submit Button Pressed
     @IBAction func submitBtnPressed(sender: AnyObject) {
         guard linkTxtField.text != "" else {
         
@@ -118,6 +109,45 @@ class AddNewPinViewController: UIViewController {
             })
         }
     }
+    
+    
+    // preview button pressed function
+    @IBAction func prvBtnPressed(sender: AnyObject) {
+        guard linkTxtField.text != "" else {
+            let alert = UIAlertController(title: "error", message: "you must a link", preferredStyle: .Alert)
+            alert.addAction(UIAlertAction(title: "dismiss", style: .Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+            return
+        }
+        let app = UIApplication.sharedApplication()
+        let url = NSURL(string: linkTxtField.text!)!
+        if app.canOpenURL(url) {
+            app.openURL(url)
+        } else {
+            let alert = UIAlertController(title: "error", message: "cannot open link", preferredStyle: .Alert)
+            alert.addAction(UIAlertAction(title: "dismiss", style: .Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+        
+    }
+    
+ 
+    // cancel button pressed function
+    @IBAction func cancelBtnPressed(sender: AnyObject) {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+   
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
+    
     
 
 }

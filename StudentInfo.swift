@@ -4,6 +4,7 @@
 //
 //  Created by wealthyjalloh on 14/07/2016.
 //  Copyright © 2016 CWJ. All rights reserved.
+//  Completed
 //
 
 import Foundation
@@ -11,11 +12,11 @@ import Foundation
 struct StudentInfo {
     
     //Properties
-    var firstName: String
-    var lastName: String
-    var linkUrl: String
-    var latitude: Double
-    var longitude: Double
+    let firstName: String
+    let lastName: String
+    let linkUrl: String
+    let latitude: Double
+    let longitude: Double
     
     // init 
     init(dict: [String: AnyObject]) {

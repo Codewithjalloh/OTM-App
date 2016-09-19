@@ -6,11 +6,13 @@
 //  Copyright © 2016 CWJ. All rights reserved.
 //
 
+
 import UIKit
 import MapKit
 
 class MapViewController: UIViewController, MKMapViewDelegate  {
     
+    // Outlet
     @IBOutlet weak var mapView: MKMapView!
     
     override func viewWillAppear(animated: Bool) {
@@ -26,8 +28,8 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
         
         if pinV == nil {
             pinV = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "pinpoint")
-            pinV?.canShowCallout = true
-            pinV?.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+            pinV!.canShowCallout = true
+            pinV!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
         } else {
             pinV?.annotation = annotation
         }
@@ -44,15 +46,21 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
         }
     }
     
+    // remove All Annotations function
+    func removeAllAnnotations() {
+        let annotationToRemove = mapView.annotations.filter { $0 !== mapView.userLocation }
+        mapView.removeAnnotations(annotationToRemove)
+    }
     
+    // add annotation function
     func addAnnotations() {
         var annotations = [MKPointAnnotation]()
-        for studentBio in MapModel.shareInstance().studentInfos {
+        for studentInfo in StudentInformation.sharedInstance.studentInfos {
             let annotation = MKPointAnnotation()
             
-            annotation.coordinate = CLLocationCoordinate2D(latitude: studentBio.latitude, longitude: studentBio.longitude)
-            annotation.title = studentBio.fullName()
-            annotation.subtitle = studentBio.linkUrl
+            annotation.coordinate = CLLocationCoordinate2D(latitude: studentInfo.latitude, longitude: studentInfo.longitude)
+            annotation.title = studentInfo.fullName()
+            annotation.subtitle = studentInfo.linkUrl
             
             annotations.append(annotation)
         }
@@ -61,12 +69,8 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
     
     
     
-    func removeAllAnnotations() {
-        let annotationToRemove = mapView.annotations.filter { $0 !== mapView.userLocation }
-        mapView.removeAnnotations(annotationToRemove)
-    }
     
-    
+    // load the Map Data And Display function 
     func loadMapDataAndDisplay() {
         MapModel.shareInstance().loadStudentInfos { (success, errorString) -> Void in
             dispatch_async(dispatch_get_main_queue(), {
@@ -74,16 +78,27 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
                     self.removeAllAnnotations()
                     self.addAnnotations()
                 } else {
-                    let alert = UIAlertController(title: "error", message: errorString, preferredStyle: .Alert)
-                    alert.addAction(UIAlertAction(title: "dismiss", style: .Default, handler: nil))
+                    let alert = UIAlertController(title: "Error", message: "No Internet Connection, Please connect to the Internet", preferredStyle: .Alert)
+                    alert.addAction(UIAlertAction(title: "Dismiss", style: .Default, handler: nil))
                     self.presentViewController(alert, animated: true, completion: nil)
                 }
             })
         }
     }
 
+    
+
+    // MARK: Action 
+    // logout button pressed
+    @IBAction func logOutBtnPressed(sender: AnyObject) {
+        MapModel.shareInstance().logOut()
+        
+        self.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    // submit new pin function
     func submitNewPin() {
-        let request = NSMutableURLRequest(URL: NSURL(string: "https://api.parse.com/1/classes/StudentLocation")!)
+        let request = NSMutableURLRequest(URL: NSURL(string: "https://parse.udacity.com/parse/classes/StudentLocation")!)
         request.HTTPMethod = "POST"
         request.addValue("QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY", forHTTPHeaderField: "X-Parse-REST-API-Key")
@@ -92,7 +107,7 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
         
         let session = NSURLSession.sharedSession()
         let task = session.dataTaskWithRequest(request) { data, response, error in
-        
+            
             guard error == nil else {
                 print("error returned by request", error)
                 return
@@ -102,21 +117,9 @@ class MapViewController: UIViewController, MKMapViewDelegate  {
         task.resume()
         
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        
-    }
 
     
-    @IBAction func logOutBtnPressed(sender: AnyObject) {
-        MapModel.shareInstance().logOut()
-        let loginC = self.storyboard?.instantiateViewControllerWithIdentifier("LoginViewController") as! LoginViewController
-        self.presentViewController(loginC, animated: true, completion: nil)
-    }
-    
-    
+    // refresh button pressed
     @IBAction func refreshBtnPushed(sender: AnyObject) {
         loadMapDataAndDisplay()
     }
